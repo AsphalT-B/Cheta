@@ -1,0 +1,5 @@
+"use client";
+import { DashboardHeader, ErrorState, LoadingState, Money } from "../components";
+import { useSubscriptionsQuery } from "../queries";
+
+export default function CalendarPage() { const { data, isLoading, isError } = useSubscriptionsQuery(); if (isLoading) return <LoadingState />; if (isError) return <ErrorState />; const days = Array.from({ length: 31 }, (_, index) => index + 1); return <><DashboardHeader title="May 2026" subtitle={<>{Money({ value: data.filter(item => item.billingDay <= 31).reduce((sum, item) => sum + item.price, 0) })} still to pay this month.</>} /><section className="dashboard-panel"><div className="calendar-grid weekdays">{["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => <b key={day}>{day}</b>)}</div><div className="calendar-grid">{days.map(day => { const items = data.filter(item => item.billingDay === day); return <div className={`calendar-day ${day === 20 ? "today" : ""}`} key={day}><span>{day}</span>{items.map(item => <em style={{ background: item.color }} key={item.id}>{item.name}</em>)}</div>; })}</div></section></>; }

@@ -1,0 +1,10 @@
+"use client";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { AuthShell, emailPattern, Field, GoogleIcon, MessageBanner, PasswordField } from "../components";
+
+export default function SignInPage() {
+  const router = useRouter(); const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [submitted, setSubmitted] = useState(false); const [visible, setVisible] = useState(false); const validEmail = emailPattern.test(email);
+  function submit(event: FormEvent) { event.preventDefault(); setSubmitted(true); if (validEmail && password.length >= 8) router.push("/auth/done"); }
+  return <AuthShell view="signin"><h1>Welcome back, sign in.</h1><p className="sub">Every plan and renewal is right where you left it.</p>{submitted && (!validEmail || password.length < 8) && <MessageBanner tone="error" title="Those details don&apos;t match" message="Check your email and password and try again." />}<button className="button alt"><GoogleIcon />Continue with Google</button><div className="or">or use your email</div><form onSubmit={submit}><Field label="Email address" id="email" type="email" placeholder="you@example.com" value={email} onChange={setEmail} error={submitted && !validEmail ? "Enter a valid email address." : undefined} autoComplete="email" /><PasswordField label="Password" id="password" placeholder="At least 8 characters" value={password} onChange={setPassword} error={submitted && password.length < 8 ? "Password must be at least 8 characters." : undefined} autoComplete="current-password" visible={visible} onToggle={() => setVisible(!visible)} /><div className="row"><label className="check"><input type="checkbox" />Remember me</label><button type="button" className="link" onClick={() => router.push("/auth/forgot")}>Forgot password?</button></div><button className="button">Sign in</button></form><p className="foot">New to Subvault? <button className="link" onClick={() => router.push("/auth/signup")}>Create account</button></p></AuthShell>;
+}
