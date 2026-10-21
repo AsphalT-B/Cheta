@@ -73,36 +73,77 @@ export class AnalyticsService {
 
   async insights(userId: string, months: number) {
     const subscriptions = await this.subscriptions(userId);
-    const summaries = subscriptions.map((subscription) => this.toSummary(subscription));
+    const summaries = subscriptions.map((subscription) =>
+      this.toSummary(subscription),
+    );
+
     const categoryTotals = new Map<string, number>();
 
     for (const subscription of summaries) {
       categoryTotals.set(
         subscription.category.name,
-        (categoryTotals.get(subscription.category.name) ?? 0) + subscription.monthly_equivalent,
+        (categoryTotals.get(subscription.category.name) ?? 0) +
+          subscription.monthly_equivalent,
       );
     }
 
+    const now = new Date();
+
     const trend = Array.from({ length: months }, (_, index) => {
-      const date = new Date();
-      date.setUTCDate(1);
-      date.setUTCMonth(date.getUTCMonth() - (months - index - 1));
+      const date = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth() - (months - index - 1),
+          1,
+        ),
+      );
+
+      const monthStart = date.getTime();
+      const nextMonthStart = Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth() + 1,
+        1,
+      );
+
+      const monthlySpend = summaries.reduce((total, item) => {
+        const startDate = new Date(`${item.start_date}T00:00:00.000Z`).getTime();
+
+        // Count subscriptions that started before the end of this month.
+        if (startDate < nextMonthStart) {
+          return total + item.monthly_equivalent;
+        }
+
+        return total;
+      }, 0);
+
       return {
-        month: `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`,
-        monthly_spend: this.round(summaries.reduce((total, item) => total + item.monthly_equivalent, 0)),
+        month: `${date.getUTCFullYear()}-${String(
+          date.getUTCMonth() + 1,
+        ).padStart(2, '0')}`,
+        monthly_spend: this.round(monthlySpend),
       };
     });
 
-    const biggest = [...summaries].sort((a, b) => b.monthly_equivalent - a.monthly_equivalent)[0] ?? null;
+    const biggest =
+      [...summaries].sort(
+        (a, b) => b.monthly_equivalent - a.monthly_equivalent,
+      )[0] ?? null;
 
     return {
-      category_split: [...categoryTotals.entries()].map(([category, total]) => ({
-        category,
-        monthly_spend: this.round(total),
-      })),
+      category_split: [...categoryTotals.entries()].map(
+        ([category, total]) => ({
+          category,
+          monthly_spend: this.round(total),
+        }),
+      ),
       trend,
       biggest_plan: biggest,
-      yearly_projection: this.round(summaries.reduce((total, item) => total + item.monthly_equivalent, 0) * 12),
+      yearly_projection: this.round(
+        summaries.reduce(
+          (total, item) => total + item.monthly_equivalent,
+          0,
+        ) * 12,
+      ),
     };
   }
 
