@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { AuthShell, emailPattern, Field, GoogleIcon, MessageBanner, PasswordField } from "../components";
 import { Spinner } from "../../components/spinner";
 import { authClient } from "../../lib/auth-client";
-import { toast } from "sonner";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -26,10 +25,9 @@ export default function SignInPage() {
     setLoading("email");
     try {
       const result = await authClient.signIn.email({ email, password, rememberMe: true });
-      if (result.error) { const message = "Something went wrong."; setError(message); toast.error(message); return; }
-      toast.success("Welcome back");
+      if (result.error) { const message = "Something went wrong."; setError(message); return; }
       router.push("/dashboard");
-    } catch { const message = "Something went wrong."; setError(message); toast.error(message); }
+    } catch { const message = "Something went wrong."; setError(message); }
     finally { setLoading(null); }
   }
 
@@ -38,8 +36,8 @@ export default function SignInPage() {
     setLoading("google");
     try {
       const result = await authClient.signIn.social({ provider: "google", callbackURL: "/dashboard" });
-      if (result.error) { const message = "Something went wrong."; setError(message); toast.error(message); }
-    } catch { toast.error("Something went wrong."); }
+      if (result.error) { const message = "Something went wrong."; setError(message); }
+    } catch { setError("Something went wrong."); }
     finally { setLoading(null); }
   }
 

@@ -1,5 +1,7 @@
-"use client";
-import { DashboardHeader, ErrorState, LoadingState, Money } from "../components";
-import { useInsightsQuery } from "../queries";
+import InsightsPageClient from "./insights-client";
 
-export default function InsightsPage() { const { data, isLoading, isError } = useInsightsQuery(); if (isLoading) return <LoadingState />; if (isError || !data) return <ErrorState />; const total = data.category_split.reduce((sum, item) => sum + item.monthly_spend, 0); const maxTrend = Math.max(...data.trend.map(item => item.monthly_spend), 1); const biggest = data.biggest_plan; return <><DashboardHeader title="Insights" subtitle="Where your money goes each month." /><div className="dashboard-two-col"><section className="dashboard-panel"><div className="panel-heading"><h2>Spend by category</h2></div>{data.category_split.map(group => <div className="insight-bar" key={group.category}><span>{group.category}</span><div><i style={{ width: `${total ? group.monthly_spend / total * 100 : 0}%` }} /></div><b><Money value={group.monthly_spend} /></b></div>)}</section><section className="insight-tip"><h2>{biggest ? `${biggest.name} is your biggest plan` : "No subscription insights yet"}</h2><p>{biggest ? <>It costs <b><Money value={biggest.monthly_equivalent} /></b> per month on average. Your current plans project to <b><Money value={data.yearly_projection} /></b> a year.</> : "Add subscriptions to see spending insights."}</p></section></div><section className="dashboard-panel"><div className="panel-heading"><h2>Last 6 months</h2></div><div className="spend-bars">{data.trend.map(item => <div key={item.month}><i style={{ height: `${Math.max(8, item.monthly_spend / maxTrend * 100)}%` }} /><span>{new Date(`${item.month}-01T00:00:00Z`).toLocaleDateString("en-NG", { month: "short", timeZone: "UTC" })}</span></div>)}</div></section></>; }
+export const instant = false;
+
+export default function InsightsPagePage() {
+  return <InsightsPageClient />;
+}
