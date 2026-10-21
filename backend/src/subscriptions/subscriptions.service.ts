@@ -117,9 +117,9 @@ export class SubscriptionsService {
   private nextDueDate(startDate: Date, count: number, unit: IntervalUnit) {
     const due = new Date(startDate);
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
 
-    while (due < today) {
+    while (due <= today) {
       this.advance(due, count, unit);
     }
 
@@ -129,8 +129,8 @@ export class SubscriptionsService {
   private advance(date: Date, count: number, unit: IntervalUnit) {
     if (unit === 'day') date.setTime(date.getTime() + count * DAY_MS);
     if (unit === 'week') date.setTime(date.getTime() + count * 7 * DAY_MS);
-    if (unit === 'month') date.setMonth(date.getMonth() + count);
-    if (unit === 'year') date.setFullYear(date.getFullYear() + count);
+    if (unit === 'month') date.setUTCMonth(date.getUTCMonth() + count);
+    if (unit === 'year') date.setUTCFullYear(date.getUTCFullYear() + count);
   }
 
   private monthlyEquivalent(price: number, count: number, unit: IntervalUnit) {

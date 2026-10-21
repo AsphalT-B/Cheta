@@ -135,7 +135,7 @@ export class AnalyticsService {
   private nextDueDate(startDate: Date, count: number, unit: IntervalUnit) {
     const due = new Date(startDate);
     const today = this.startOfDay(new Date());
-    while (due < today) this.advance(due, count, unit);
+    while (due <= today) this.advance(due, count, unit);
     return due;
   }
 

@@ -46,7 +46,7 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
-      void sendAuthEmail({
+      await sendAuthEmail({
         to: user.email,
         subject: 'Reset your Cheta password',
         text: `Click this link to reset your Cheta password: ${url}`,

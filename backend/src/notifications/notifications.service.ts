@@ -65,7 +65,7 @@ export class NotificationsService {
   private nextDueDate(startDate: Date, count: number, unit: string) {
     const due = new Date(startDate);
     const today = this.startOfDay(new Date());
-    while (due < today) {
+    while (due <= today) {
       if (unit === 'day') due.setUTCDate(due.getUTCDate() + count);
       if (unit === 'week') due.setUTCDate(due.getUTCDate() + count * 7);
       if (unit === 'month') due.setUTCMonth(due.getUTCMonth() + count);

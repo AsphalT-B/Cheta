@@ -51,7 +51,7 @@ function getNextPayment(start: string, every: string, unit: BillingUnit) {
   today.setHours(0, 0, 0, 0);
   const interval = Math.max(1, Number(every) || 1);
   let next = firstPayment;
-  while (next < today) next = addBillingInterval(next, interval, unit);
+  while (next <= today) next = addBillingInterval(next, interval, unit);
   return next;
 }
 
@@ -102,7 +102,7 @@ export function AddSubscriptionDialog({ onClose, subscription }: { onClose: () =
 }
 
 export function DeleteSubscriptionDialog({ subscription, onCancel, onConfirm }: { subscription: Subscription; onCancel: () => void; onConfirm: () => void | Promise<void> }) { return <div className="modal-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) onCancel(); }}><section className="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="delete-subscription-title"><span className="confirm-icon"><Trash2 size={22} /></span><h2 id="delete-subscription-title">Delete subscription?</h2><p>Are you sure you want to remove <b>{subscription.name}</b> from your vault?</p><div className="dialog-actions"><button type="button" className="dialog-cancel" onClick={onCancel}>Cancel</button><button type="button" className="danger-button" onClick={onConfirm}>Delete</button></div></section></div>; }
-export function LoadingState() { return <ChetaLoader />; }
+export function LoadingState() { return <ChetaLoader inline />; }
 export function ErrorState() { return <div className="dashboard-panel dashboard-loading"><div className="message-banner message-error" role="alert"><AlertCircle size={20} aria-hidden="true" /><div><b>We couldn&apos;t load your dashboard data.</b><span>Check your connection and try again.</span></div></div></div>; }
 export function DashboardMessage({ tone, message, onDismiss }: { tone: "error" | "success" | "info"; message: string; onDismiss: () => void }) { const Icon = tone === "success" ? CheckCircle2 : AlertCircle; return <div className={`message-banner message-${tone} compact-message`} role={tone === "error" ? "alert" : "status"}><Icon size={18} aria-hidden="true" /><span>{message}</span><button type="button" className="message-dismiss" onClick={onDismiss} aria-label="Dismiss message">×</button></div>; }
 export function Money({ value }: { value: number }) { return <>{new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", minimumFractionDigits: 2 }).format(value)}</>; }
