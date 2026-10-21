@@ -9,5 +9,5 @@ export default function Home() {
     router.replace("/auth/signin");
   }, [router]);
 
-  return <main aria-label="Loading Subvault" />;
+  return <main aria-label="Loading Cheta" />;
 }

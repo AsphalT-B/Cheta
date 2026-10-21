@@ -39,6 +39,21 @@ export async function sendAuthEmail({
   }
 }
 
+export async function sendRenewalReminderEmail({ to, name, subscription, daysUntilDue, dueDate }: {
+  to: string;
+  name: string;
+  subscription: string;
+  daysUntilDue: number;
+  dueDate: string;
+}) {
+  const timing = daysUntilDue === 0 ? 'today' : `in ${daysUntilDue} days`;
+  return sendAuthEmail({
+    to,
+    subject: `${subscription} renews ${timing}`,
+    text: `Hi ${name},\n\nYour ${subscription} subscription renews ${timing} on ${dueDate}.\n\nYou can review it in your Cheta vault.`,
+  });
+}
+
 export function verificationOtpEmail({ email, otp, type }: {
   email: string;
   otp: string;

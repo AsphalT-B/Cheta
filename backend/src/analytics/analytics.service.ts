@@ -120,6 +120,7 @@ export class AnalyticsService {
     return {
       id: subscription.id,
       name: subscription.name,
+      logo_url: subscription.logoUrl,
       price: Number(subscription.price),
       category_id: subscription.categoryId,
       category: subscription.category,

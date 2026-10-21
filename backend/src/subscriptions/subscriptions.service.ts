@@ -40,6 +40,7 @@ export class SubscriptionsService {
 
   async create(userId: string, input: {
     name: string;
+    logo_url?: string | null;
     price: number;
     category_id: string;
     interval_count: number;
@@ -51,6 +52,7 @@ export class SubscriptionsService {
         userId,
         categoryId: input.category_id,
         name: input.name,
+        logoUrl: input.logo_url ?? null,
         price: input.price,
         intervalCount: input.interval_count,
         intervalUnit: input.interval_unit,
@@ -64,6 +66,7 @@ export class SubscriptionsService {
 
   async update(userId: string, id: string, input: Partial<{
     name: string;
+    logo_url?: string | null;
     price: number;
     category_id: string;
     interval_count: number;
@@ -76,6 +79,7 @@ export class SubscriptionsService {
       where: { id },
       data: {
         ...(input.name === undefined ? {} : { name: input.name }),
+        ...(input.logo_url === undefined ? {} : { logoUrl: input.logo_url }),
         ...(input.price === undefined ? {} : { price: input.price }),
         ...(input.category_id === undefined ? {} : { categoryId: input.category_id }),
         ...(input.interval_count === undefined ? {} : { intervalCount: input.interval_count }),
@@ -98,6 +102,7 @@ export class SubscriptionsService {
     return {
       id: subscription.id,
       name: subscription.name,
+      logo_url: subscription.logoUrl,
       price: Number(subscription.price),
       category_id: subscription.categoryId,
       category: subscription.category,

@@ -3,6 +3,7 @@ export type IntervalUnit = 'day' | 'week' | 'month' | 'year';
 export type SubscriptionResponse = {
   id: string;
   name: string;
+  logo_url: string | null;
   price: number;
   category_id: string;
   category: { id: string; name: string };

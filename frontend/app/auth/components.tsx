@@ -5,18 +5,18 @@ import { AlertCircle, CheckCircle2, Info, TriangleAlert } from "lucide-react";
 
 export type AuthView = "signin" | "signup" | "forgot" | "sent" | "reset" | "verify" | "done";
 const panelCopy: Record<AuthView, [string, string]> = {
-  signin: ["Every renewal, before it surprises you.", "Track all your subscriptions in one secure vault and get alerts days before you're charged."], signup: ["Find the plans you forgot you pay for.", "Add your subscriptions once. Subvault shows what you spend and what you could save."], forgot: ["Locked out? It happens.", "Reset links are single-use and expire in 30 minutes to keep your vault safe."], sent: ["Your vault stays protected.", "Your subscriptions and renewal alerts stay exactly as you left them."], reset: ["Almost back in.", "A strong password keeps every plan in your vault secure."], verify: ["One more check, then you're in.", "Two-step verification keeps your billing details private, even if a password leaks."], done: ["Welcome to your vault.", "Everything you pay for, organized in one secure place."],
+  signin: ["Every renewal, before it surprises you.", "Track all your subscriptions in one secure vault and get alerts days before you're charged."], signup: ["Find the plans you forgot you pay for.", "Add your subscriptions once. Cheta shows what you spend and what you could save."], forgot: ["Locked out? It happens.", "Reset links are single-use and expire in 30 minutes to keep your vault safe."], sent: ["Your vault stays protected.", "Your subscriptions and renewal alerts stay exactly as you left them."], reset: ["Almost back in.", "A strong password keeps every plan in your vault secure."], verify: ["One more check, then you're in.", "Two-step verification keeps your billing details private, even if a password leaks."], done: ["Welcome to your vault.", "Everything you pay for, organized in one secure place."],
 };
 
 export function AuthShell({ view, children }: { view: AuthView; children: ReactNode }) {
-  return <div className="shell"><section className="left"><div className="brand-row"><div className="brand"><span className="logo">⌁</span><span><b>Subvault</b><small>SMART SUBSCRIPTIONS</small></span></div><ThemeToggle /></div><main className="main">{children}</main><p className="copy">© 2026 Subvault. Know what you pay for.</p></section><aside className="right" aria-hidden="true"><div className="spark">✦</div><h2>{panelCopy[view][0]}</h2><p>{panelCopy[view][1]}</p><div className="stage"><div className="pill">↗ <span>Saved $284.00 this year</span></div><div className="card"><header><b>Upcoming renewals</b><span className="chip">Alerts on</span></header>{[["N", "Netflix", "Renews in 2 days", "$22.99", "netflix"], ["F", "Figma", "May 29", "$15.00", "figma"], ["i", "iCloud+", "Jun 02", "$2.99", "icloud"]].map(([letter, product, date, amount, color]) => <div className="subscription" key={product}><i className={color}>{letter}</i><div><b>{product}</b><small>{date}</small></div><em>{amount}</em></div>)}</div><div className="spend"><small>Monthly spend</small><b>$147.83</b><div className="bars"><i /><i /><i /><i /><i /></div></div></div></aside></div>;
+  return <div className="shell"><section className="left"><div className="brand-row"><div className="brand"><span className="logo">⌁</span><span><b>Cheta</b><small>SMART SUBSCRIPTIONS</small></span></div><ThemeToggle /></div><main className="main">{children}</main><p className="copy">© 2026 Cheta. Know what you pay for.</p></section><aside className="right" aria-hidden="true"><div className="spark">✦</div><h2>{panelCopy[view][0]}</h2><p>{panelCopy[view][1]}</p><div className="stage"><div className="pill">↗ <span>Saved $284.00 this year</span></div><div className="card"><header><b>Upcoming renewals</b><span className="chip">Alerts on</span></header>{[["N", "Netflix", "Renews in 2 days", "$22.99", "netflix"], ["F", "Figma", "May 29", "$15.00", "figma"], ["i", "iCloud+", "Jun 02", "$2.99", "icloud"]].map(([letter, product, date, amount, color]) => <div className="subscription" key={product}><i className={color}>{letter}</i><div><b>{product}</b><small>{date}</small></div><em>{amount}</em></div>)}</div><div className="spend"><small>Monthly spend</small><b>$147.83</b><div className="bars"><i /><i /><i /><i /><i /></div></div></div></aside></div>;
 }
 
 function ThemeToggle() {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("subvault-theme");
+    const saved = window.localStorage.getItem("cheta-theme") ?? window.localStorage.getItem("subvault-theme");
     const isDark = saved ? saved === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDark(isDark);
@@ -27,7 +27,7 @@ function ThemeToggle() {
     const next = !dark;
     setDark(next);
     document.documentElement.dataset.theme = next ? "dark" : "light";
-    window.localStorage.setItem("subvault-theme", next ? "dark" : "light");
+    window.localStorage.setItem("cheta-theme", next ? "dark" : "light");
   }
 
   return <button className="theme-toggle" type="button" onClick={toggle} aria-label={dark ? "Switch to light mode" : "Switch to dark mode"} aria-pressed={dark}><span aria-hidden="true">{dark ? "☀" : "☾"}</span><span className="theme-label">{dark ? "Light" : "Dark"}</span></button>;
