@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { Session } from '@thallesp/nestjs-better-auth';
 import type { UserSession } from '@thallesp/nestjs-better-auth';
 import { SubscriptionsService } from './subscriptions.service.js';
+import { SubscriptionDto, UpdateSubscriptionDto } from './subscription.dto.js';
 
 @Controller('api/v1/subscriptions')
 export class SubscriptionsController {
@@ -18,12 +19,12 @@ export class SubscriptionsController {
   }
 
   @Post()
-  create(@Session() session: UserSession, @Body() body: any) {
+  create(@Session() session: UserSession, @Body() body: SubscriptionDto) {
     return this.subscriptions.create(session.user.id, body);
   }
 
   @Patch(':id')
-  update(@Session() session: UserSession, @Param('id') id: string, @Body() body: any) {
+  update(@Session() session: UserSession, @Param('id') id: string, @Body() body: UpdateSubscriptionDto) {
     return this.subscriptions.update(session.user.id, id, body);
   }
 

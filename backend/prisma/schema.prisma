@@ -110,6 +110,7 @@ model Subscription {
   category      Category     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
   @@index([userId])
+  @@index([userId, startDate])
   @@index([categoryId])
   @@map("subscription")
 }

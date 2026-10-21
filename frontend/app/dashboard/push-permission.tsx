@@ -12,6 +12,8 @@ function urlBase64ToUint8Array(value: string) {
 export function PushPermissionPrompt() {
   const [visible, setVisible] = useState(false);
   const [busy, setBusy] = useState(false);
+  // Browser capability detection must happen after hydration.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setVisible(typeof window !== "undefined" && "Notification" in window && Notification.permission === "default" && "serviceWorker" in navigator && "PushManager" in window); }, []);
   async function enable() {
     setBusy(true);

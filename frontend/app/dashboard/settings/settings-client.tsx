@@ -22,6 +22,8 @@ export default function SettingsPage() {
   const [savingSettings, setSavingSettings] = useState(false);
   const [feedback, setFeedback] = useState<{ tone: "error" | "success"; message: string } | null>(null);
 
+  // Form state is synchronized with the server-backed settings once loaded.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (settings.data) {
       setReminders(settings.data.renewal_reminder_days ?? REMINDER_OPTIONS);
@@ -33,6 +35,7 @@ export default function SettingsPage() {
     }
   }, [settings.data]);
   useEffect(() => { if (session.data?.user.name) setName(session.data.user.name); }, [session.data?.user.name]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   if (settings.isLoading || session.isPending) return <LoadingState />;
   if (settings.isError || !settings.data || !session.data) return <ErrorState />;

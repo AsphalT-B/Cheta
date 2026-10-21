@@ -9,14 +9,16 @@ export class SubscriptionsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async list(userId: string, q?: string, categoryId?: string) {
+    const search = q?.trim().slice(0, 80);
     const subscriptions = await this.prisma.subscription.findMany({
       where: {
         userId,
-        ...(q ? { name: { contains: q, mode: 'insensitive' } } : {}),
+        ...(search ? { name: { contains: search, mode: 'insensitive' } } : {}),
         ...(categoryId ? { categoryId } : {}),
       },
       include: { category: true },
       orderBy: { startDate: 'asc' },
+      take: 100,
     });
 
     return {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { apiBaseUrl, authClient } from "../lib/auth-client";
+import { useQuery, type QueryClient } from "@tanstack/react-query";
+import { apiBaseUrl } from "../lib/auth-client";
 import type { Subscription } from "./data";
 
 export type Category = { id: string; name: string };
@@ -31,7 +31,7 @@ async function getOverview(): Promise<DashboardOverview> {
 }
 
 export function useDashboardOverviewQuery() {
-  return useQuery({ queryKey: ["dashboard-overview"], queryFn: getOverview, refetchInterval: 30_000, refetchIntervalInBackground: true });
+  return useQuery({ queryKey: ["dashboard-overview"], queryFn: getOverview, staleTime: 60_000, refetchInterval: 120_000 });
 }
 
 export type CalendarCharge = { date: string; total: number; subscriptions: Array<{ id: string; name: string; amount: number; category_id: string }> };
@@ -44,7 +44,7 @@ async function getCalendar(month: string): Promise<CalendarData> {
 }
 
 export function useCalendarQuery(month: string) {
-  return useQuery({ queryKey: ["calendar", month], queryFn: () => getCalendar(month), refetchInterval: 30_000 });
+  return useQuery({ queryKey: ["calendar", month], queryFn: () => getCalendar(month), staleTime: 120_000, refetchInterval: 300_000 });
 }
 
 export type InsightsData = {
@@ -61,7 +61,7 @@ async function getInsights(): Promise<InsightsData> {
 }
 
 export function useInsightsQuery() {
-  return useQuery({ queryKey: ["insights"], queryFn: getInsights, refetchInterval: 30_000 });
+  return useQuery({ queryKey: ["insights"], queryFn: getInsights, staleTime: 120_000, refetchInterval: 300_000 });
 }
 
 export type SettingsData = { renewal_alert_days: number; renewal_reminder_days: number[]; in_app_notifications_enabled: boolean; email_notifications_enabled: boolean; weekly_summary_enabled: boolean; theme: "light" | "dark" | "system"; timezone: string };
@@ -73,7 +73,7 @@ async function getSettings(): Promise<SettingsData> {
 }
 
 export function useSettingsQuery() {
-  return useQuery({ queryKey: ["settings"], queryFn: getSettings, staleTime: 60_000 });
+  return useQuery({ queryKey: ["settings"], queryFn: getSettings, staleTime: 300_000 });
 }
 
 export async function updateSettings(input: Partial<SettingsData>) {
@@ -92,7 +92,7 @@ async function getNotifications(): Promise<NotificationsData> {
 }
 
 export function useNotificationsQuery() {
-  return useQuery({ queryKey: ["notifications"], queryFn: getNotifications, refetchInterval: 60_000 });
+  return useQuery({ queryKey: ["notifications"], queryFn: getNotifications, staleTime: 30_000, refetchInterval: 60_000 });
 }
 
 export async function markNotificationRead(id: string) {
@@ -117,7 +117,9 @@ function suggestedLogoUrl(name: string) {
   return slug ? `https://cdn.simpleicons.org/${slug}/FFFFFF` : undefined;
 }
 
-function mapSubscription(item: any): Subscription {
+type ApiSubscription = { id: string; name: string; logo_url?: string | null; category: { name: string }; category_id: string; price: number; next_due_date: string; interval_unit: "day" | "week" | "month" | "year"; start_date: string; interval_count: number; monthly_equivalent: number };
+
+function mapSubscription(item: ApiSubscription): Subscription {
   return { id: item.id, name: item.name, logoUrl: item.logo_url ?? suggestedLogoUrl(item.name), category: item.category.name, categoryId: item.category_id, price: item.price, billingDay: Number(item.next_due_date.slice(-2)), workspace: "Personal", color: categoryColor(item.category.name), period: item.interval_unit === "year" ? "yearly" : item.interval_unit, intervalCount: item.interval_count, intervalUnit: item.interval_unit, startDate: item.start_date, nextDueDate: item.next_due_date, monthlyEquivalent: item.monthly_equivalent };
 }
 
@@ -136,11 +138,11 @@ async function getSubscriptions(search = ""): Promise<Subscription[]> {
 }
 
 export function useCategoriesQuery() {
-  return useQuery({ queryKey: ["categories"], queryFn: getCategories, staleTime: 300_000 });
+  return useQuery({ queryKey: ["categories"], queryFn: getCategories, staleTime: 3_600_000 });
 }
 
 export function useSubscriptionsQuery(search = "") {
-  const query = useQuery({ queryKey: ["subscriptions", search], queryFn: () => getSubscriptions(search), refetchInterval: 30_000, refetchIntervalInBackground: true });
+  const query = useQuery({ queryKey: ["subscriptions", search], queryFn: () => getSubscriptions(search), staleTime: 60_000, refetchInterval: 120_000 });
   return { ...query, data: query.data ?? [] };
 }
 
@@ -155,3 +157,16 @@ async function subscriptionRequest(path: string, method: "POST" | "PATCH" | "DEL
 export function createSubscription(input: SubscriptionInput) { return subscriptionRequest("", "POST", input); }
 export function updateSubscription(id: string | number, input: SubscriptionInput) { return subscriptionRequest(`/${id}`, "PATCH", input); }
 export function deleteSubscription(id: string | number) { return subscriptionRequest(`/${id}`, "DELETE"); }
+
+export function prefetchDashboardModules(queryClient: QueryClient) {
+  const month = new Date().toISOString().slice(0, 7);
+  return Promise.all([
+    queryClient.prefetchQuery({ queryKey: ["dashboard-overview"], queryFn: getOverview, staleTime: 60_000 }),
+    queryClient.prefetchQuery({ queryKey: ["calendar", month], queryFn: () => getCalendar(month), staleTime: 120_000 }),
+    queryClient.prefetchQuery({ queryKey: ["insights"], queryFn: getInsights, staleTime: 120_000 }),
+    queryClient.prefetchQuery({ queryKey: ["settings"], queryFn: getSettings, staleTime: 300_000 }),
+    queryClient.prefetchQuery({ queryKey: ["notifications"], queryFn: getNotifications, staleTime: 30_000 }),
+    queryClient.prefetchQuery({ queryKey: ["categories"], queryFn: getCategories, staleTime: 3_600_000 }),
+    queryClient.prefetchQuery({ queryKey: ["subscriptions", ""], queryFn: () => getSubscriptions(""), staleTime: 60_000 }),
+  ]);
+}

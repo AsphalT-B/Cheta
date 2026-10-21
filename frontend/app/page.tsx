@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChetaLoader } from "./components/cheta-loader";
 
 export default function Home() {
   const router = useRouter();
@@ -10,5 +9,5 @@ export default function Home() {
     router.replace("/auth/signin");
   }, [router]);
 
-  return <ChetaLoader />;
+  return null;
 }

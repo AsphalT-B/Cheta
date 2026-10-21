@@ -2,12 +2,13 @@
 
 import { CheckCheck } from "lucide-react";
 import { useState } from "react";
-import { DashboardHeader, DashboardMessage, ErrorState, LoadingState } from "../components";
+import { DashboardHeader, ErrorState, LoadingState } from "../components";
 import { markAllNotificationsRead, markNotificationRead, useNotificationsQuery } from "../queries";
 
 export default function NotificationsPage() {
   const query = useNotificationsQuery();
   const [feedback, setFeedback] = useState<{ tone: "error" | "success"; message: string } | null>(null);
+  void feedback;
   if (query.isLoading) return <LoadingState />;
   if (query.isError || !query.data) return <ErrorState />;
   async function markRead(id: string) { try { setFeedback(null); await markNotificationRead(id); await query.refetch(); } catch { setFeedback({ tone: "error", message: "Something went wrong." }); } }
