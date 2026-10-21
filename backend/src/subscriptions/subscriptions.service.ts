@@ -18,7 +18,7 @@ export class SubscriptionsService {
       },
       include: { category: true },
       orderBy: { startDate: 'asc' },
-      take: 100,
+      take: 4,
     });
 
     return {
