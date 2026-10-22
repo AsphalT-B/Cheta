@@ -2831,14 +2831,32 @@ body .subscriptions-search {
 .dashboard-top {
   position: fixed !important;
   top: 0;
-  left: 250px;
+  left: 330px;
   right: 0;
   z-index: 100;
   padding-left: clamp(20px, 4vw, 52px);
   padding-right: clamp(20px, 4vw, 52px);
 }
+.dashboard-sidebar {
+  z-index: 110;
+}
+.dashboard-top > .dashboard-search {
+  position: absolute;
+  left: clamp(20px, 4vw, 52px);
+  transform: none;
+}
+.dashboard-top > .dashboard-actions {
+  position: absolute;
+  right: clamp(20px, 4vw, 52px);
+  z-index: 1;
+}
 .dashboard-main {
   padding-top: 76px;
+}
+@media (max-width: 1100px) and (min-width: 821px) {
+  .dashboard-top {
+    left: 250px;
+  }
 }
 @media (max-width: 820px) {
   html,
@@ -2863,5 +2881,12 @@ body .subscriptions-search {
     right: 0;
     padding-left: 16px;
     padding-right: 16px;
+  }
+  .dashboard-top > .dashboard-search {
+    position: static;
+    transform: none;
+  }
+  .dashboard-top > .dashboard-actions {
+    right: 16px;
   }
 }
